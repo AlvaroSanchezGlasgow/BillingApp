@@ -11,7 +11,7 @@
 	<groupId>com.app</groupId>
 	<artifactId>billingApp</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>billingApp</name>
+	<name>bill</name>
 	<description>Demo project for Spring Boot</description>
 
 	<properties>
@@ -28,11 +28,11 @@
     <type>pom</type>
 </dependency>
 
-<!-- Lombok -->
+	<!-- Lombok -->
 <dependency>
 		<groupId>org.projectlombok</groupId>
 		<artifactId>lombok</artifactId>
-		<version>1.18.6</version>
+		<!-- <version>1.18.6</version> -->
 		<scope>provided</scope>
 	</dependency>
 	
@@ -80,5 +80,4 @@
 		</plugins>
 	</build>
 
-	<packaging>war</packaging>
 </project>

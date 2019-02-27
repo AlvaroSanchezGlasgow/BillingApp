@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.app.bill.DTO.BillDTO;
 import com.app.bill.util.GeneratePDF;
 
 
@@ -29,12 +30,11 @@ public class BillingController {
 	
 	@PostMapping(value = "/generateBillInPDF", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
 	@ResponseBody
-	public void generateBill(@RequestParam(value="customer") String sCustomerData,@RequestParam(value="customerEmail") String sCustomerEmail,
-			@RequestParam(value="providerCompanyData") String sProviderCompanyData, @RequestParam(value="adicionalData") String sAdicionalData,
+	public void generateBill(final BillDTO billDto,
 			HttpServletResponse response, HttpServletRequest request) throws Exception {
 	
 		GeneratePDF bill = new GeneratePDF();
-		bill.generateBillingPDF(response, sCustomerData,sProviderCompanyData);
+		bill.generateBillingPDF(response, billDto);
 		
 		
 	}

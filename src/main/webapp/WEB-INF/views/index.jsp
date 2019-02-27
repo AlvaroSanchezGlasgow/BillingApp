@@ -74,19 +74,19 @@
 						<div class="field">
 							<label class="label">Customer</label>
 							<div class="control has-icons-left has-icons-right">
-								<input class="input" type="text" placeholder="Your Company"
+								<input class="input" type="text" placeholder="Customer Data"
 									value="Company IT Ltd. - ID:45789052"
-									name="providerCompanyData" id="providerCompanyData"> <span
+									name="customerCompanyData" id="customerCompanyData"> <span
 									class="icon is-small is-left"> <i class="fas fa-user"></i>
 								</span>
 							</div>
 
 						</div>
 						<div class="field">
-							<label class="label">Additional Data</label>
+							<label class="label">Additional Customer Data</label>
 							<div class="control">
 								<textarea class="textarea" placeholder="Att: Ms. Jane Doe"
-									id="adicionalData" name="adicionalData"></textarea>
+									id="adicionalCustomerData" name="adicionalCustomerData"></textarea>
 							</div>
 						</div>
 					</div>
@@ -177,8 +177,8 @@
 						<tr>
 							<td></td>
 							<td>VAT</td>
-							<td><input type="number" placeholder="%" id="VatPercentage"
-								name="VatPercentage" /></td>
+							<td><input type="number" placeholder="%" id="vatPercentage"
+								name="vatPercentage" /></td>
 							<td></td>
 						</tr>
 						<tr>

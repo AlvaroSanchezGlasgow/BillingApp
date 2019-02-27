@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.app.bill.DTO.BillDTO;
 import com.itextpdf.io.IOException;
 import com.itextpdf.io.font.constants.StandardFonts;
 import com.itextpdf.io.image.ImageData;
@@ -45,7 +46,7 @@ public class GeneratePDF {
 	
 
 	public static void generateBillingPDF(
-			HttpServletResponse response, String sCustomerData, String sProviderCompanyData) throws IOException, java.io.IOException {
+			HttpServletResponse response, BillDTO billDTO) throws IOException, java.io.IOException {
 		
 		PdfWriter writer = new PdfWriter(response.getOutputStream());
 
@@ -71,7 +72,7 @@ public class GeneratePDF {
 			document = new Document(pdfDoc, PageSize.A4);
 
 			// We add the header
-			addReportHeader(document,sProviderCompanyData);
+			addReportHeader(document,billDTO);
 
 			// We add the main table
 			addReportTable(document);
@@ -100,7 +101,7 @@ public class GeneratePDF {
 	 * @throws IOException
 	 * @throws java.io.IOException 
 	 */
-	public static void addReportHeader(Document document, String sProviderCompanyData) throws IOException, java.io.IOException {
+	public static void addReportHeader(Document document, BillDTO billDTO) throws IOException, java.io.IOException {
 
 		Date today = new Date();
 		Calendar cal = Calendar.getInstance();
@@ -119,11 +120,25 @@ public class GeneratePDF {
 		} catch (Exception e) {
 			logger.error("Error: " + e.getMessage());
 		}
+		
+		document.add(new Paragraph(billDTO.getProviderCompany())
+				.setFont(PdfFontFactory.createFont(StandardFonts.HELVETICA)).setFontColor(ColorConstants.BLACK)
+				.setTextAlignment(TextAlignment.LEFT));
+		document.add(new Paragraph(billDTO.getAddressLine1())
+				.setFont(PdfFontFactory.createFont(StandardFonts.HELVETICA)).setFontColor(ColorConstants.BLACK)
+				.setTextAlignment(TextAlignment.LEFT));
+		document.add(new Paragraph(billDTO.getAddressLine1())
+				.setFont(PdfFontFactory.createFont(StandardFonts.HELVETICA)).setFontColor(ColorConstants.BLACK)
+				.setTextAlignment(TextAlignment.LEFT));
+		document.add(new Paragraph(billDTO.getProviderEmail())
+				.setFont(PdfFontFactory.createFont(StandardFonts.HELVETICA)).setFontColor(ColorConstants.BLACK)
+				.setTextAlignment(TextAlignment.LEFT));
+		
 
-		document.add(new Paragraph(year + " - "+sProviderCompanyData).setBold()
+		document.add(new Paragraph(year + " - "+billDTO.getCustomerCompanyData()).setBold()
 				.setFont(PdfFontFactory.createFont(StandardFonts.HELVETICA)).setFontColor(ColorConstants.BLACK)
 				.setTextAlignment(TextAlignment.RIGHT));
-		document.add(new Paragraph("").setFont(PdfFontFactory.createFont(StandardFonts.HELVETICA))
+		document.add(new Paragraph(billDTO.getAdicionalCustomerData()).setFont(PdfFontFactory.createFont(StandardFonts.HELVETICA))
 				.setFontColor(ColorConstants.BLACK).setTextAlignment(TextAlignment.RIGHT));
 		
 		document.add(new Paragraph("")
