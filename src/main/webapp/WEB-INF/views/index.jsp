@@ -1,3 +1,4 @@
+
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
@@ -12,14 +13,16 @@
 	href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.4/css/bulma.min.css">
 <script defer
 	src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
-	
-	<!-- JQUERY -->
-	
 
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.js"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 
-	
+<!-- JQUERY -->
+
+<script
+	src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.js"></script>
+<script
+	src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+
 
 </head>
 <body>
@@ -94,111 +97,82 @@
 
 				<hr></hr>
 
-				<table class="table is-striped table is-fullwidth table is-bordered">
+				<a href="javascript:addRow();" class="button is-dark">Add Row</a>
+
+				<p></p>
+				<div id="myModal" class="notification is-danger"
+					style="display: none;">
+					
+					Max <strong>10 rows</strong>
+				</div>
+				
+				<div class="columns">
+				<div class="column">
+
+				<table id="tableBilling" class="table is-striped table is-fullwidth">
 					<thead>
 						<tr>
+							<th></th>
 							<th>Ammount</th>
 							<th>Description</th>
 							<th>Unit Price</th>
 							<th>Total</th>
 						</tr>
 					</thead>
-					<tbody>
+					<tbody id="mainTable">
 						<tr>
-							<td><input class="input" type="number"
-								placeholder="Ammount 1" id="ammount1" name="ammount1" /></td>
+							<td></td>
+							<td><input class="input" type="number" placeholder="Ammount"
+								id="ammount0" name="ammount0"
+								oninput="javascript:calculateTotals();" /></td>
 							<td><input class="input" type="text"
-								placeholder="Description 1" id="description1"
-								name="description1" /></td>
+								placeholder="Description" id="description0" name="description0" /></td>
 							<td><input class="input" type="number"
-								placeholder="Unit Price 1" id="unitPrice1" name="unitPrice1" /></td>
-							<td><input class="input" type="number" placeholder="Total 1"
-								id="total1" name="total1" value="" readonly /></td>
+								placeholder="Unit Price" id="unitPrice0" name="unitPrice0"
+								oninput="javascript:calculateTotals();" /></td>
+							<td><input class="input" type="number" placeholder="Total"
+								id="total0" name="total0" value="" readonly /></td>
 						</tr>
-						<tr>
-							<td><input class="input" type="number"
-								placeholder="Ammount 2" id="ammount2" name="ammount2" /></td>
-							<td><input class="input" type="text"
-								placeholder="Description 2" id="description2"
-								name="description2" /></td>
-							<td><input class="input" type="number"
-								placeholder="Unit Price 2" id="unitPrice2" name="unitPrice2" /></td>
-							<td><input class="input" type="number" placeholder="Total 2"
-								id="total2" name="total2" value="" readonly /></td>
-						</tr>
-						<tr>
-							<td><input class="input" type="number"
-								placeholder="Ammount 3" id="ammount3" name="ammount3" /></td>
-							<td><input class="input" type="text"
-								placeholder="Description 3" id="description3"
-								name="description3" /></td>
-							<td><input class="input" type="number"
-								placeholder="Unit Price 3" id="unitPrice3" name="unitPrice3" /></td>
-							<td><input class="input" type="number" placeholder="Total 3"
-								id="total3" name="total3" value="" readonly /></td>
-						</tr>
-						<tr>
-							<td><input class="input" type="number"
-								placeholder="Ammount 4" id="ammount4" name="ammount4" /></td>
-							<td><input class="input" type="text"
-								placeholder="Description 4" id="description4"
-								name="description4" /></td>
-							<td><input class="input" type="number"
-								placeholder="Unit Price 4" id="unitPrice4" name="unitPrice4" /></td>
-							<td><input class="input" type="number" placeholder="Total 4"
-								id="total4" name="total4" value="" readonly /></td>
-						</tr>
-						<tr>
-							<td><input class="input" type="number"
-								placeholder="Ammount 5" id="ammount5" name="ammount5" /></td>
-							<td><input class="input" type="text"
-								placeholder="Description 5" id="description5"
-								name="description5" /></td>
-							<td><input class="input" type="number"
-								placeholder="Unit Price 5" id="unitPrice5" name="unitPrice5" /></td>
-							<td><input class="input" type="number" placeholder="Total 5"
-								id="total5" name="total5" value="" readonly /></td>
-						</tr>
-						<tr>
-							<td><input class="input" type="number"
-								placeholder="Ammount 6" id="ammount6" name="ammount6" /></td>
-							<td><input class="input" type="text"
-								placeholder="Description 6" id="description6"
-								name="description6" /></td>
-							<td><input class="input" type="number"
-								placeholder="Unit Price 6" id="unitPrice6" name="unitPrice61" /></td>
-							<td><input class="input" type="number" placeholder="Total 6"
-								id="total6" name="total6" value="" readonly /></td>
-						</tr>
-
 					</tbody>
 
 					<tfoot>
 						<tr>
 							<td></td>
-							<td>VAT</td>
-							<td><input type="number" placeholder="%" id="vatPercentage"
-								name="vatPercentage" /></td>
 							<td></td>
+							<td></td>
+							<td>SubTotal</td>
+							<td><input class="input" type="number"
+								placeholder="SubTotal" id="subTotal" name="subTotal" readonly /></td>
 						</tr>
 						<tr>
 							<td></td>
 							<td></td>
-							<td>TOTAL</td>
+							<td>VAT %</td>
+							<td><input class="input" type="number" placeholder="%"
+								id="vatPercentage" name="vatPercentage"
+								oninput="javascript:calculateTotals();" /></td>
+							<td><input class="input" type="number" id="vatAmmount"
+								name="vatAmmount" readonly /></td>
+						</tr>
+						<tr>
 							<td></td>
+							<td></td>
+							<td></td>
+							<td>TOTAL</td>
+							<td><input class="input" type="number" placeholder="TOTAL"
+								id="total" name="total" readonly /></td>
 						</tr>
 					</tfoot>
 				</table>
-
-
-
-
-
+</div>
+</div>
 				<div class="field is-grouped is-grouped-centered">
 					<p class="control">
-					<input class="button is-primary is-active" type="submit" click="javascript:$(#billForm).submit();" value="Submit input">
-					<input class="button is-warning is-active" type="reset" value="Reset input">
-					
+						<input class="button is-primary is-active" type="submit"
+							click="javascript:$(#billForm).submit();" value="Submit input">
+						<input class="button is-warning is-active" type="reset"
+							value="Reset input">
+
 					</p>
 				</div>
 
@@ -208,5 +182,113 @@
 			<hr></hr>
 		</div>
 	</section>
+
+
+	<script>
+		function deleteRow() {
+
+			$("#myModal").hide();
+			
+			var rowNumber = $("#mainTable tr").length;
+			$("#row" + (rowNumber - 1)).remove();
+			
+			
+
+		}
+
+		function addRow() {
+
+			var counter = $("#mainTable tr").length;
+			if ((counter - 1) < 10) {
+
+				$("#myModal").hide();
+				var counter = $("#mainTable tr").length;
+				$("#mainTable")
+						.append(
+
+								"<tr id=\"row"+counter+"\" name=\"row"+counter+"\">"
+										+ "<td><a href=\"javascript:deleteRow("
+										+ ");\"  class=\"button is-text\">Delete Row</a></td>"
+										+ "<td><input class=\"input\" type=\"number\" placeholder=\"Ammount"
+										+ counter
+										+ "\""
+										+ "id=\"ammount"
+										+ counter
+										+ "\" name=\"ammount"
+										+ counter
+										+ "\" oninput=\"javascript:calculateTotals();\"/></td>"
+										+ "<td><input class=\"input\" type=\"text\""
+			+ "placeholder=\"Description"+counter+"\" id=\"description"+counter+"\""
+			+ "name=\"description"+counter+"\" /></td>"
+										+ "<td><input class=\"input\" type=\"number\""
+										+ "placeholder=\"Unit Price"
+										+ counter
+										+ "\" id=\"unitPrice"
+										+ counter
+										+ "\" name=\"unitPrice"
+										+ counter
+										+ "\" oninput=\"javascript:calculateTotals();\"/></td>"
+										+ "<td><input class=\"input\" type=\"number\" placeholder=\"Total"+counter+"\""
+			+ "id=\"total"+counter+"\" name=\"total"+counter+"\" value=\"\" readonly /></td>"
+										+ "</tr>"
+
+						);
+			} else {
+				$("#myModal").show();
+			}
+
+		}
+
+		function calculateTotals() {
+
+			var item = $("#mainTable tr").length;
+
+			var i;
+
+			var counter = 0;
+
+			$('#mainTable tr').each(
+					function(row) {
+
+						if ($("#ammount" + row).val() == "") {
+							$("#ammount" + row).val("0");
+						}
+
+						if ($("#unitPrice" + row).val() == "") {
+							$("#unitPrice" + row).val("0");
+						}
+
+						$("#total" + row).val(
+								parseInt($("#ammount" + row).val()
+										* $("#unitPrice" + row).val()));
+
+						counter = counter + parseInt($("#total" + row).val());
+					});
+
+			$("#subTotal").val(counter);
+
+			if ($("#subTotal").val() == "") {
+				$("#subTotal").val("0");
+			}
+
+			if ($("#vatPercentage").val() == "") {
+				$("#vatPercentage").val("0");
+			}
+
+			$("#vatAmmount").val(
+					parseInt($("#subTotal").val())
+							* (parseInt($("#vatPercentage").val()) / 100));
+
+			if ($("#vatAmmount").val() == "") {
+				$("#vatAmmount").val("0");
+			}
+			$("#total").val(
+					parseInt($("#subTotal").val())
+							+ parseFloat($("#vatAmmount").val()));
+		}
+	</script>
+
+
 </body>
 </html>
+

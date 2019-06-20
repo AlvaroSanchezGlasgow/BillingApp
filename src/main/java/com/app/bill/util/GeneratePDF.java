@@ -45,8 +45,7 @@ public class GeneratePDF {
 	
 	
 
-	public static void generateBillingPDF(
-			HttpServletResponse response, BillDTO billDTO) throws IOException, java.io.IOException {
+	public void generateBillingPDF(HttpServletResponse response, BillDTO billPdf) throws IOException, java.io.IOException {
 		
 		PdfWriter writer = new PdfWriter(response.getOutputStream());
 
@@ -54,6 +53,8 @@ public class GeneratePDF {
 		Document document = new Document(pdfDoc, PageSize.A4);
 
 		try {
+			
+			//billPdf.
 
 			response.setContentType("application/pdf");
 			pdfDoc.setTagged();
@@ -72,14 +73,15 @@ public class GeneratePDF {
 			document = new Document(pdfDoc, PageSize.A4);
 
 			// We add the header
-			addReportHeader(document,billDTO);
+			addReportHeader(document,billPdf);
 
 			// We add the main table
-			addReportTable(document);
+			addReportTable(document,billPdf);
+			
+			//foter
+			addReportFooter(document,billPdf);
 
-			// We Add footer
-			addReportFooter(document);
-
+			
 			document.flush();
 			document.close();
 
@@ -101,7 +103,7 @@ public class GeneratePDF {
 	 * @throws IOException
 	 * @throws java.io.IOException 
 	 */
-	public static void addReportHeader(Document document, BillDTO billDTO) throws IOException, java.io.IOException {
+	public static void addReportHeader(Document document, BillDTO billPdf) throws IOException, java.io.IOException {
 
 		Date today = new Date();
 		Calendar cal = Calendar.getInstance();
@@ -120,36 +122,29 @@ public class GeneratePDF {
 		} catch (Exception e) {
 			logger.error("Error: " + e.getMessage());
 		}
-		
-		document.add(new Paragraph(billDTO.getProviderCompany())
-				.setFont(PdfFontFactory.createFont(StandardFonts.HELVETICA)).setFontColor(ColorConstants.BLACK)
-				.setTextAlignment(TextAlignment.LEFT));
-		document.add(new Paragraph(billDTO.getAddressLine1())
-				.setFont(PdfFontFactory.createFont(StandardFonts.HELVETICA)).setFontColor(ColorConstants.BLACK)
-				.setTextAlignment(TextAlignment.LEFT));
-		document.add(new Paragraph(billDTO.getAddressLine1())
-				.setFont(PdfFontFactory.createFont(StandardFonts.HELVETICA)).setFontColor(ColorConstants.BLACK)
-				.setTextAlignment(TextAlignment.LEFT));
-		document.add(new Paragraph(billDTO.getProviderEmail())
-				.setFont(PdfFontFactory.createFont(StandardFonts.HELVETICA)).setFontColor(ColorConstants.BLACK)
-				.setTextAlignment(TextAlignment.LEFT));
-		
 
-		document.add(new Paragraph(year + " - "+billDTO.getCustomerCompanyData()).setBold()
+		document.add(new Paragraph(new Date().toString()).setBold()
 				.setFont(PdfFontFactory.createFont(StandardFonts.HELVETICA)).setFontColor(ColorConstants.BLACK)
-				.setTextAlignment(TextAlignment.RIGHT));
-		document.add(new Paragraph(billDTO.getAdicionalCustomerData()).setFont(PdfFontFactory.createFont(StandardFonts.HELVETICA))
-				.setFontColor(ColorConstants.BLACK).setTextAlignment(TextAlignment.RIGHT));
+				.setTextAlignment(TextAlignment.RIGHT).setFontSize(7));
+		document.add(new Paragraph(billPdf.getCustomerCompanyData()).setFont(PdfFontFactory.createFont(StandardFonts.HELVETICA))
+				.setFontColor(ColorConstants.BLACK).setTextAlignment(TextAlignment.RIGHT).setFontSize(7));
+		document.add(new Paragraph(billPdf.getAdicionalCustomerData()).setFont(PdfFontFactory.createFont(StandardFonts.HELVETICA))
+				.setFontColor(ColorConstants.BLACK).setTextAlignment(TextAlignment.RIGHT).setFontSize(7));
 		
-		document.add(new Paragraph("")
+		document.add(new Paragraph(billPdf.getProviderCompany())
 				.setFont(PdfFontFactory.createFont(StandardFonts.HELVETICA)).setFontColor(ColorConstants.BLACK)
-				.setTextAlignment(TextAlignment.CENTER));
-		document.add(new Paragraph("")
+				.setTextAlignment(TextAlignment.LEFT).setFontSize(7));
+		
+		document.add(new Paragraph(billPdf.getAddressLine1())
 				.setFont(PdfFontFactory.createFont(StandardFonts.HELVETICA)).setFontColor(ColorConstants.BLACK)
-				.setTextAlignment(TextAlignment.CENTER));
-		document.add(new Paragraph("")
+				.setTextAlignment(TextAlignment.LEFT).setFontSize(7));
+		document.add(new Paragraph(billPdf.getAddressLine2())
 				.setFont(PdfFontFactory.createFont(StandardFonts.HELVETICA)).setFontColor(ColorConstants.BLACK)
-				.setTextAlignment(TextAlignment.CENTER));
+				.setTextAlignment(TextAlignment.LEFT).setFontSize(7));
+		document.add(new Paragraph(billPdf.getProviderEmail())
+				.setFont(PdfFontFactory.createFont(StandardFonts.HELVETICA)).setFontColor(ColorConstants.BLACK)
+				.setTextAlignment(TextAlignment.LEFT).setFontSize(7));
+		
 		 SolidLine lineDrawer = new SolidLine(1f);
 			lineDrawer.setColor(genericColor);
 			document.add(new LineSeparator(lineDrawer));
@@ -171,59 +166,457 @@ public class GeneratePDF {
 	/**
 	 * 
 	 * @param document
+	 * @param billPdf 
 	 * @param pListData
 	 * @param listRatesDTO 
 	 * @throws IOException
 	 * @throws java.io.IOException 
 	 */
-	public static void addReportTable(Document document) throws IOException, java.io.IOException {
+	public static void addReportTable(Document document, BillDTO billPdf) throws IOException, java.io.IOException {
 
-		Table table = new Table(3);
+		Table table = new Table(4);
 		// table.setWidth();
 
 		List<String> listHeaders = new ArrayList<String>();
-		listHeaders.add("ID");
-		listHeaders.add("Concept");
-		listHeaders.add("Price");
+		listHeaders.add("Ammount");
+		listHeaders.add("Description");
+		listHeaders.add("Unit Price");
+		listHeaders.add("Total");
 		
 
 		Cell cell = new Cell();
 
-		for (String i : listHeaders) {
+		//HEADER
 
-			cell = new Cell().add(new Paragraph(i)).setFont(PdfFontFactory.createFont(StandardFonts.HELVETICA))
+			cell = new Cell().add(new Paragraph("AMMOUNT")).setFont(PdfFontFactory.createFont(StandardFonts.HELVETICA))
 					.setFontColor(ColorConstants.BLACK).setTextAlignment(TextAlignment.CENTER)
-					.setBackgroundColor(ColorConstants.WHITE).setTextAlignment(TextAlignment.CENTER)
-					.setBorder(Border.NO_BORDER).setFontSize(12);
+					.setBackgroundColor(ColorConstants.WHITE).setTextAlignment(TextAlignment.CENTER).setBackgroundColor(ColorConstants.LIGHT_GRAY)
+					.setFontSize(12);
+
+			table.addHeaderCell(cell);
+			
+			cell = new Cell().add(new Paragraph("DESCRIPTION")).setFont(PdfFontFactory.createFont(StandardFonts.HELVETICA))
+					.setFontColor(ColorConstants.BLACK).setTextAlignment(TextAlignment.CENTER)
+					.setBackgroundColor(ColorConstants.WHITE).setTextAlignment(TextAlignment.CENTER).setBackgroundColor(ColorConstants.LIGHT_GRAY)
+					.setFontSize(12);
+
+			table.addHeaderCell(cell);
+			
+			cell = new Cell().add(new Paragraph("UNIT PRICE")).setFont(PdfFontFactory.createFont(StandardFonts.HELVETICA))
+					.setFontColor(ColorConstants.BLACK).setTextAlignment(TextAlignment.CENTER)
+					.setBackgroundColor(ColorConstants.WHITE).setTextAlignment(TextAlignment.CENTER).setBackgroundColor(ColorConstants.LIGHT_GRAY)
+					.setFontSize(12);
+			
+			table.addHeaderCell(cell);
+			
+			cell = new Cell().add(new Paragraph("TOTAL")).setFont(PdfFontFactory.createFont(StandardFonts.HELVETICA))
+					.setFontColor(ColorConstants.BLACK).setTextAlignment(TextAlignment.CENTER)
+					.setBackgroundColor(ColorConstants.WHITE).setTextAlignment(TextAlignment.CENTER).setBackgroundColor(ColorConstants.LIGHT_GRAY)
+					.setFontSize(12);
 
 			table.addHeaderCell(cell);
 			//table.addHeaderCell(cell).setFixedLayout().setHeight(4).setWidth(200);
-		}
+	
+			//BODY
 		
-		
-
-		
-			table.addCell(new Cell(1, 3)
-					.add(new Paragraph("No Results Found").setFont(PdfFontFactory.createFont(StandardFonts.HELVETICA))
+					
+			table.addCell(new Cell()
+					.add(new Paragraph(""+billPdf.getAmmount0()).setFont(PdfFontFactory.createFont(StandardFonts.HELVETICA))
 							.setFontColor(ColorConstants.BLACK).setBackgroundColor(ColorConstants.WHITE)
-							.setTextAlignment(TextAlignment.CENTER).setBorder(Border.NO_BORDER).setFontSize(9)));
+							.setTextAlignment(TextAlignment.CENTER).setFontSize(9)));
+							//.setFixedLayout().setHeight(4).setWidth(200);
+			
+			table.addCell(new Cell()
+					.add(new Paragraph(""+billPdf.getDescription0()).setFont(PdfFontFactory.createFont(StandardFonts.HELVETICA))
+							.setFontColor(ColorConstants.BLACK).setBackgroundColor(ColorConstants.WHITE)
+							.setTextAlignment(TextAlignment.CENTER).setFontSize(9)));
+			
+			
+			table.addCell(new Cell()
+					.add(new Paragraph(""+billPdf.getUnitPrice0()).setFont(PdfFontFactory.createFont(StandardFonts.HELVETICA))
+							.setFontColor(ColorConstants.BLACK).setBackgroundColor(ColorConstants.WHITE)
+							.setTextAlignment(TextAlignment.CENTER).setFontSize(9)));
+							//.setFixedLayout().setHeight(4).setWidth(200);
+			
+			table.addCell(new Cell()
+					.add(new Paragraph(""+billPdf.getTotal0()).setFont(PdfFontFactory.createFont(StandardFonts.HELVETICA))
+							.setFontColor(ColorConstants.BLACK).setBackgroundColor(ColorConstants.WHITE)
+							.setTextAlignment(TextAlignment.CENTER).setFontSize(9)));
 							//.setFixedLayout().setHeight(4).setWidth(200);
 	
-
+			
+			//////////////////
+			
+			
+				
+			if (billPdf.getAmmount1()!=0) {
+			table.addCell(new Cell()
+					.add(new Paragraph(""+billPdf.getAmmount1()).setFont(PdfFontFactory.createFont(StandardFonts.HELVETICA))
+							.setFontColor(ColorConstants.BLACK).setBackgroundColor(ColorConstants.WHITE)
+							.setTextAlignment(TextAlignment.CENTER).setFontSize(9)));
+							//.setFixedLayout().setHeight(4).setWidth(200);
+			
+			table.addCell(new Cell()
+					.add(new Paragraph(""+billPdf.getDescription1()).setFont(PdfFontFactory.createFont(StandardFonts.HELVETICA))
+							.setFontColor(ColorConstants.BLACK).setBackgroundColor(ColorConstants.WHITE)
+							.setTextAlignment(TextAlignment.CENTER).setFontSize(9)));
+			
+			
+			table.addCell(new Cell()
+					.add(new Paragraph(""+billPdf.getUnitPrice1()).setFont(PdfFontFactory.createFont(StandardFonts.HELVETICA))
+							.setFontColor(ColorConstants.BLACK).setBackgroundColor(ColorConstants.WHITE)
+							.setTextAlignment(TextAlignment.CENTER).setFontSize(9)));
+							//.setFixedLayout().setHeight(4).setWidth(200);
+			
+			table.addCell(new Cell()
+					.add(new Paragraph(""+billPdf.getTotal1()).setFont(PdfFontFactory.createFont(StandardFonts.HELVETICA))
+							.setFontColor(ColorConstants.BLACK).setBackgroundColor(ColorConstants.WHITE)
+							.setTextAlignment(TextAlignment.CENTER).setFontSize(9)));
+							//.setFixedLayout().setHeight(4).setWidth(200);
+			}
+			
+			////////////////
+			
+			if (billPdf.getAmmount2()!=0) {
+				table.addCell(new Cell()
+						.add(new Paragraph(""+billPdf.getAmmount2()).setFont(PdfFontFactory.createFont(StandardFonts.HELVETICA))
+								.setFontColor(ColorConstants.BLACK).setBackgroundColor(ColorConstants.WHITE)
+								.setTextAlignment(TextAlignment.CENTER).setFontSize(9)));
+								//.setFixedLayout().setHeight(4).setWidth(200);
+				
+				table.addCell(new Cell()
+						.add(new Paragraph(""+billPdf.getDescription2()).setFont(PdfFontFactory.createFont(StandardFonts.HELVETICA))
+								.setFontColor(ColorConstants.BLACK).setBackgroundColor(ColorConstants.WHITE)
+								.setTextAlignment(TextAlignment.CENTER).setFontSize(9)));
+				
+				
+				table.addCell(new Cell()
+						.add(new Paragraph(""+billPdf.getUnitPrice2()).setFont(PdfFontFactory.createFont(StandardFonts.HELVETICA))
+								.setFontColor(ColorConstants.BLACK).setBackgroundColor(ColorConstants.WHITE)
+								.setTextAlignment(TextAlignment.CENTER).setFontSize(9)));
+								//.setFixedLayout().setHeight(4).setWidth(200);
+				
+				table.addCell(new Cell()
+						.add(new Paragraph(""+billPdf.getTotal2()).setFont(PdfFontFactory.createFont(StandardFonts.HELVETICA))
+								.setFontColor(ColorConstants.BLACK).setBackgroundColor(ColorConstants.WHITE)
+								.setTextAlignment(TextAlignment.CENTER).setFontSize(9)));
+								//.setFixedLayout().setHeight(4).setWidth(200);
+				}
+				
+				////////////////
+				
+			if (billPdf.getAmmount3()!=0) {
+				table.addCell(new Cell()
+						.add(new Paragraph(""+billPdf.getAmmount3()).setFont(PdfFontFactory.createFont(StandardFonts.HELVETICA))
+								.setFontColor(ColorConstants.BLACK).setBackgroundColor(ColorConstants.WHITE)
+								.setTextAlignment(TextAlignment.CENTER).setFontSize(9)));
+								//.setFixedLayout().setHeight(4).setWidth(200);
+				
+				table.addCell(new Cell()
+						.add(new Paragraph(""+billPdf.getDescription3()).setFont(PdfFontFactory.createFont(StandardFonts.HELVETICA))
+								.setFontColor(ColorConstants.BLACK).setBackgroundColor(ColorConstants.WHITE)
+								.setTextAlignment(TextAlignment.CENTER).setFontSize(9)));
+				
+				
+				table.addCell(new Cell()
+						.add(new Paragraph(""+billPdf.getUnitPrice3()).setFont(PdfFontFactory.createFont(StandardFonts.HELVETICA))
+								.setFontColor(ColorConstants.BLACK).setBackgroundColor(ColorConstants.WHITE)
+								.setTextAlignment(TextAlignment.CENTER).setFontSize(9)));
+								//.setFixedLayout().setHeight(4).setWidth(200);
+				
+				table.addCell(new Cell()
+						.add(new Paragraph(""+billPdf.getTotal3()).setFont(PdfFontFactory.createFont(StandardFonts.HELVETICA))
+								.setFontColor(ColorConstants.BLACK).setBackgroundColor(ColorConstants.WHITE)
+								.setTextAlignment(TextAlignment.CENTER).setFontSize(9)));
+								//.setFixedLayout().setHeight(4).setWidth(200);
+				}
+				
+				////////////////
+			if (billPdf.getAmmount4()!=0) {
+				table.addCell(new Cell()
+						.add(new Paragraph(""+billPdf.getAmmount4()).setFont(PdfFontFactory.createFont(StandardFonts.HELVETICA))
+								.setFontColor(ColorConstants.BLACK).setBackgroundColor(ColorConstants.WHITE)
+								.setTextAlignment(TextAlignment.CENTER).setFontSize(9)));
+								//.setFixedLayout().setHeight(4).setWidth(200);
+				
+				table.addCell(new Cell()
+						.add(new Paragraph(""+billPdf.getDescription4()).setFont(PdfFontFactory.createFont(StandardFonts.HELVETICA))
+								.setFontColor(ColorConstants.BLACK).setBackgroundColor(ColorConstants.WHITE)
+								.setTextAlignment(TextAlignment.CENTER).setFontSize(9)));
+				
+				
+				table.addCell(new Cell()
+						.add(new Paragraph(""+billPdf.getUnitPrice4()).setFont(PdfFontFactory.createFont(StandardFonts.HELVETICA))
+								.setFontColor(ColorConstants.BLACK).setBackgroundColor(ColorConstants.WHITE)
+								.setTextAlignment(TextAlignment.CENTER).setFontSize(9)));
+								//.setFixedLayout().setHeight(4).setWidth(200);
+				
+				table.addCell(new Cell()
+						.add(new Paragraph(""+billPdf.getTotal4()).setFont(PdfFontFactory.createFont(StandardFonts.HELVETICA))
+								.setFontColor(ColorConstants.BLACK).setBackgroundColor(ColorConstants.WHITE)
+								.setTextAlignment(TextAlignment.CENTER).setFontSize(9)));
+								//.setFixedLayout().setHeight(4).setWidth(200);
+				}
+				
+				////////////////
+			
+			if (billPdf.getAmmount5()!=0) {
+				table.addCell(new Cell()
+						.add(new Paragraph(""+billPdf.getAmmount5()).setFont(PdfFontFactory.createFont(StandardFonts.HELVETICA))
+								.setFontColor(ColorConstants.BLACK).setBackgroundColor(ColorConstants.WHITE)
+								.setTextAlignment(TextAlignment.CENTER).setFontSize(9)));
+								//.setFixedLayout().setHeight(4).setWidth(200);
+				
+				table.addCell(new Cell()
+						.add(new Paragraph(""+billPdf.getDescription5()).setFont(PdfFontFactory.createFont(StandardFonts.HELVETICA))
+								.setFontColor(ColorConstants.BLACK).setBackgroundColor(ColorConstants.WHITE)
+								.setTextAlignment(TextAlignment.CENTER).setFontSize(9)));
+				
+				
+				table.addCell(new Cell()
+						.add(new Paragraph(""+billPdf.getUnitPrice5()).setFont(PdfFontFactory.createFont(StandardFonts.HELVETICA))
+								.setFontColor(ColorConstants.BLACK).setBackgroundColor(ColorConstants.WHITE)
+								.setTextAlignment(TextAlignment.CENTER).setFontSize(9)));
+								//.setFixedLayout().setHeight(4).setWidth(200);
+				
+				table.addCell(new Cell()
+						.add(new Paragraph(""+billPdf.getTotal5()).setFont(PdfFontFactory.createFont(StandardFonts.HELVETICA))
+								.setFontColor(ColorConstants.BLACK).setBackgroundColor(ColorConstants.WHITE)
+								.setTextAlignment(TextAlignment.CENTER).setFontSize(9)));
+								//.setFixedLayout().setHeight(4).setWidth(200);
+				}
+				
+				////////////////
+			
+			if (billPdf.getAmmount6()!=0) {
+				table.addCell(new Cell()
+						.add(new Paragraph(""+billPdf.getAmmount6()).setFont(PdfFontFactory.createFont(StandardFonts.HELVETICA))
+								.setFontColor(ColorConstants.BLACK).setBackgroundColor(ColorConstants.WHITE)
+								.setTextAlignment(TextAlignment.CENTER).setFontSize(9)));
+								//.setFixedLayout().setHeight(4).setWidth(200);
+				
+				table.addCell(new Cell()
+						.add(new Paragraph(""+billPdf.getDescription6()).setFont(PdfFontFactory.createFont(StandardFonts.HELVETICA))
+								.setFontColor(ColorConstants.BLACK).setBackgroundColor(ColorConstants.WHITE)
+								.setTextAlignment(TextAlignment.CENTER).setFontSize(9)));
+				
+				
+				table.addCell(new Cell()
+						.add(new Paragraph(""+billPdf.getUnitPrice6()).setFont(PdfFontFactory.createFont(StandardFonts.HELVETICA))
+								.setFontColor(ColorConstants.BLACK).setBackgroundColor(ColorConstants.WHITE)
+								.setTextAlignment(TextAlignment.CENTER).setFontSize(9)));
+								//.setFixedLayout().setHeight(4).setWidth(200);
+				
+				table.addCell(new Cell()
+						.add(new Paragraph(""+billPdf.getTotal6()).setFont(PdfFontFactory.createFont(StandardFonts.HELVETICA))
+								.setFontColor(ColorConstants.BLACK).setBackgroundColor(ColorConstants.WHITE)
+								.setTextAlignment(TextAlignment.CENTER).setFontSize(9)));
+								//.setFixedLayout().setHeight(4).setWidth(200);
+				}
+				
+				////////////////
+			 
+			if (billPdf.getAmmount7()!=0) {
+				table.addCell(new Cell()
+						.add(new Paragraph(""+billPdf.getAmmount7()).setFont(PdfFontFactory.createFont(StandardFonts.HELVETICA))
+								.setFontColor(ColorConstants.BLACK).setBackgroundColor(ColorConstants.WHITE)
+								.setTextAlignment(TextAlignment.CENTER).setFontSize(9)));
+								//.setFixedLayout().setHeight(4).setWidth(200);
+				
+				table.addCell(new Cell()
+						.add(new Paragraph(""+billPdf.getDescription7()).setFont(PdfFontFactory.createFont(StandardFonts.HELVETICA))
+								.setFontColor(ColorConstants.BLACK).setBackgroundColor(ColorConstants.WHITE)
+								.setTextAlignment(TextAlignment.CENTER).setFontSize(9)));
+				
+				
+				table.addCell(new Cell()
+						.add(new Paragraph(""+billPdf.getUnitPrice7()).setFont(PdfFontFactory.createFont(StandardFonts.HELVETICA))
+								.setFontColor(ColorConstants.BLACK).setBackgroundColor(ColorConstants.WHITE)
+								.setTextAlignment(TextAlignment.CENTER).setFontSize(9)));
+								//.setFixedLayout().setHeight(4).setWidth(200);
+				
+				table.addCell(new Cell()
+						.add(new Paragraph(""+billPdf.getTotal7()).setFont(PdfFontFactory.createFont(StandardFonts.HELVETICA))
+								.setFontColor(ColorConstants.BLACK).setBackgroundColor(ColorConstants.WHITE)
+								.setTextAlignment(TextAlignment.CENTER).setFontSize(9)));
+								//.setFixedLayout().setHeight(4).setWidth(200);
+				}
+				
+				////////////////
+			
+			if (billPdf.getAmmount8()!=0) {
+				table.addCell(new Cell()
+						.add(new Paragraph(""+billPdf.getAmmount8()).setFont(PdfFontFactory.createFont(StandardFonts.HELVETICA))
+								.setFontColor(ColorConstants.BLACK).setBackgroundColor(ColorConstants.WHITE)
+								.setTextAlignment(TextAlignment.CENTER).setFontSize(9)));
+								//.setFixedLayout().setHeight(4).setWidth(200);
+				
+				table.addCell(new Cell()
+						.add(new Paragraph(""+billPdf.getDescription8()).setFont(PdfFontFactory.createFont(StandardFonts.HELVETICA))
+								.setFontColor(ColorConstants.BLACK).setBackgroundColor(ColorConstants.WHITE)
+								.setTextAlignment(TextAlignment.CENTER).setFontSize(9)));
+				
+				
+				table.addCell(new Cell()
+						.add(new Paragraph(""+billPdf.getUnitPrice8()).setFont(PdfFontFactory.createFont(StandardFonts.HELVETICA))
+								.setFontColor(ColorConstants.BLACK).setBackgroundColor(ColorConstants.WHITE)
+								.setTextAlignment(TextAlignment.CENTER).setFontSize(9)));
+								//.setFixedLayout().setHeight(4).setWidth(200);
+				
+				table.addCell(new Cell()
+						.add(new Paragraph(""+billPdf.getTotal8()).setFont(PdfFontFactory.createFont(StandardFonts.HELVETICA))
+								.setFontColor(ColorConstants.BLACK).setBackgroundColor(ColorConstants.WHITE)
+								.setTextAlignment(TextAlignment.CENTER).setFontSize(9)));
+								//.setFixedLayout().setHeight(4).setWidth(200);
+				}
+				
+				////////////////
+			
+			if (billPdf.getAmmount9()!=0) {
+				table.addCell(new Cell()
+						.add(new Paragraph(""+billPdf.getAmmount9()).setFont(PdfFontFactory.createFont(StandardFonts.HELVETICA))
+								.setFontColor(ColorConstants.BLACK).setBackgroundColor(ColorConstants.WHITE)
+								.setTextAlignment(TextAlignment.CENTER).setFontSize(9)));
+								//.setFixedLayout().setHeight(4).setWidth(200);
+				
+				table.addCell(new Cell()
+						.add(new Paragraph(""+billPdf.getDescription9()).setFont(PdfFontFactory.createFont(StandardFonts.HELVETICA))
+								.setFontColor(ColorConstants.BLACK).setBackgroundColor(ColorConstants.WHITE)
+								.setTextAlignment(TextAlignment.CENTER).setFontSize(9)));
+				
+				
+				table.addCell(new Cell()
+						.add(new Paragraph(""+billPdf.getUnitPrice9()).setFont(PdfFontFactory.createFont(StandardFonts.HELVETICA))
+								.setFontColor(ColorConstants.BLACK).setBackgroundColor(ColorConstants.WHITE)
+								.setTextAlignment(TextAlignment.CENTER).setFontSize(9)));
+								//.setFixedLayout().setHeight(4).setWidth(200);
+				
+				table.addCell(new Cell()
+						.add(new Paragraph(""+billPdf.getTotal9()).setFont(PdfFontFactory.createFont(StandardFonts.HELVETICA))
+								.setFontColor(ColorConstants.BLACK).setBackgroundColor(ColorConstants.WHITE)
+								.setTextAlignment(TextAlignment.CENTER).setFontSize(9)));
+								//.setFixedLayout().setHeight(4).setWidth(200);
+				}
+				
+				////////////////
+			
+			if (billPdf.getAmmount10()!=0) {
+				table.addCell(new Cell()
+						.add(new Paragraph(""+billPdf.getAmmount10()).setFont(PdfFontFactory.createFont(StandardFonts.HELVETICA))
+								.setFontColor(ColorConstants.BLACK).setBackgroundColor(ColorConstants.WHITE)
+								.setTextAlignment(TextAlignment.CENTER).setFontSize(9)));
+								//.setFixedLayout().setHeight(4).setWidth(200);
+				
+				table.addCell(new Cell()
+						.add(new Paragraph(""+billPdf.getDescription10()).setFont(PdfFontFactory.createFont(StandardFonts.HELVETICA))
+								.setFontColor(ColorConstants.BLACK).setBackgroundColor(ColorConstants.WHITE)
+								.setTextAlignment(TextAlignment.CENTER).setFontSize(9)));
+				
+				
+				table.addCell(new Cell()
+						.add(new Paragraph(""+billPdf.getUnitPrice10()).setFont(PdfFontFactory.createFont(StandardFonts.HELVETICA))
+								.setFontColor(ColorConstants.BLACK).setBackgroundColor(ColorConstants.WHITE)
+								.setTextAlignment(TextAlignment.CENTER).setFontSize(9)));
+								//.setFixedLayout().setHeight(4).setWidth(200);
+				
+				table.addCell(new Cell()
+						.add(new Paragraph(""+billPdf.getTotal10()).setFont(PdfFontFactory.createFont(StandardFonts.HELVETICA))
+								.setFontColor(ColorConstants.BLACK).setBackgroundColor(ColorConstants.WHITE)
+								.setTextAlignment(TextAlignment.CENTER).setFontSize(9)));
+								//.setFixedLayout().setHeight(4).setWidth(200);
+				}
+				
+				////////////////
+			table.addCell(new Cell()
+					.add(new Paragraph("").setFont(PdfFontFactory.createFont(StandardFonts.HELVETICA))
+							.setFontColor(ColorConstants.BLACK).setBackgroundColor(ColorConstants.WHITE)
+							.setTextAlignment(TextAlignment.CENTER).setFontSize(9)).setBorder(Border.NO_BORDER));
+							//.setFixedLayout().setHeight(4).setWidth(200);
+			
+			table.addCell(new Cell()
+					.add(new Paragraph("").setFont(PdfFontFactory.createFont(StandardFonts.HELVETICA))
+							.setFontColor(ColorConstants.BLACK).setBackgroundColor(ColorConstants.WHITE)
+							.setTextAlignment(TextAlignment.CENTER).setFontSize(9)).setBorder(Border.NO_BORDER));
+							//.setFixedLayout().setHeight(4).setWidth(200);
+			
+			table.addCell(new Cell()
+					.add(new Paragraph("SUBTOTAL: ").setFont(PdfFontFactory.createFont(StandardFonts.HELVETICA))
+							.setFontColor(ColorConstants.BLACK).setBold().setBackgroundColor(ColorConstants.WHITE)
+							.setTextAlignment(TextAlignment.CENTER).setFontSize(9)));
+							//.setFixedLayout().setHeight(4).setWidth(200);
+			
+			table.addCell(new Cell()
+					.add(new Paragraph(""+billPdf.getSubTotal()).setFont(PdfFontFactory.createFont(StandardFonts.HELVETICA))
+							.setFontColor(ColorConstants.BLACK).setBackgroundColor(ColorConstants.WHITE)
+							.setTextAlignment(TextAlignment.CENTER).setFontSize(9)));
+			
+			table.addCell(new Cell()
+					.add(new Paragraph("").setFont(PdfFontFactory.createFont(StandardFonts.HELVETICA))
+							.setFontColor(ColorConstants.BLACK).setBackgroundColor(ColorConstants.WHITE)
+							.setTextAlignment(TextAlignment.CENTER).setFontSize(9)).setBorder(Border.NO_BORDER));
+							//.setFixedLayout().setHeight(4).setWidth(200);
+			
+			table.addCell(new Cell()
+					.add(new Paragraph("").setFont(PdfFontFactory.createFont(StandardFonts.HELVETICA))
+							.setFontColor(ColorConstants.BLACK).setBackgroundColor(ColorConstants.WHITE)
+							.setTextAlignment(TextAlignment.CENTER).setFontSize(9)).setBorder(Border.NO_BORDER));
+							//.setFixedLayout().setHeight(4).setWidth(200);
+			
+			table.addCell(new Cell()
+					.add(new Paragraph("VAT: ").setFont(PdfFontFactory.createFont(StandardFonts.HELVETICA))
+							.setFontColor(ColorConstants.BLACK).setBold().setBackgroundColor(ColorConstants.WHITE)
+							.setTextAlignment(TextAlignment.CENTER).setFontSize(9)));
+							//.setFixedLayout().setHeight(4).setWidth(200);
+			
+			table.addCell(new Cell()
+					.add(new Paragraph(""+billPdf.getVatPercentage()+"% - "+billPdf.getVatAmmount()).setFont(PdfFontFactory.createFont(StandardFonts.HELVETICA))
+							.setFontColor(ColorConstants.BLACK).setBackgroundColor(ColorConstants.WHITE)
+							.setTextAlignment(TextAlignment.CENTER).setFontSize(9)));
+							//.setFixedLayout().setHeight(4).setWidth(200);
+			
+			table.addCell(new Cell()
+					.add(new Paragraph("").setFont(PdfFontFactory.createFont(StandardFonts.HELVETICA))
+							.setFontColor(ColorConstants.BLACK).setBackgroundColor(ColorConstants.WHITE)
+							.setTextAlignment(TextAlignment.CENTER).setFontSize(9)).setBorder(Border.NO_BORDER));
+							//.setFixedLayout().setHeight(4).setWidth(200);
+			
+			table.addCell(new Cell()
+					.add(new Paragraph("").setFont(PdfFontFactory.createFont(StandardFonts.HELVETICA))
+							.setFontColor(ColorConstants.BLACK).setBackgroundColor(ColorConstants.WHITE)
+							.setTextAlignment(TextAlignment.CENTER).setFontSize(9)).setBorder(Border.NO_BORDER));
+							//.setFixedLayout().setHeight(4).setWidth(200);
+			
+			table.addCell(new Cell()
+					.add(new Paragraph("TOTAL BILL: ").setFont(PdfFontFactory.createFont(StandardFonts.HELVETICA))
+							.setFontColor(ColorConstants.BLACK).setBold().setBackgroundColor(ColorConstants.WHITE)
+							.setTextAlignment(TextAlignment.CENTER).setFontSize(9)));
+							//.setFixedLayout().setHeight(4).setWidth(200);
+			
+			table.addCell(new Cell()
+					.add(new Paragraph(""+billPdf.getTotal()).setFont(PdfFontFactory.createFont(StandardFonts.HELVETICA))
+							.setFontColor(ColorConstants.BLACK).setBackgroundColor(ColorConstants.WHITE)
+							.setTextAlignment(TextAlignment.CENTER).setFontSize(9)));
+							//.setFixedLayout().setHeight(4).setWidth(200);
+			
+		
 		/*	table.addFooterCell(new Paragraph("TOTAL")).setFont(PdfFontFactory.createFont(StandardFonts.HELVETICA))
 					.setFontColor(ColorConstants.BLACK).setBold().setBackgroundColor(ColorConstants.WHITE)
 					.setTextAlignment(TextAlignment.CENTER);
 		*/
-		document.add(table.setHorizontalAlignment(HorizontalAlignment.CENTER));
+			
+		
+		
+		document.add(table.setHorizontalAlignment(HorizontalAlignment.CENTER).setFixedLayout().setWidth(550));
 	}
 
 	/**
 	 * 
 	 * @param document
+	 * @param billPdf 
 	 * @throws IOException
 	 * @throws java.io.IOException 
 	 */
-	public static void addReportFooter(Document document) throws IOException, java.io.IOException {
+	public static void addReportFooter(Document document, BillDTO billPdf) throws IOException, java.io.IOException {
 
 		document.add(new Paragraph("")
 				.setFont(PdfFontFactory.createFont(StandardFonts.HELVETICA)).setFontColor(ColorConstants.BLACK)
@@ -289,5 +682,6 @@ public class GeneratePDF {
 
 	}
 
+	
 
 }

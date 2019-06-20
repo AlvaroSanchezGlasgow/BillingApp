@@ -7,10 +7,12 @@ import java.io.FileOutputStream;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -30,11 +32,12 @@ public class BillingController {
 	
 	@PostMapping(value = "/generateBillInPDF", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
 	@ResponseBody
-	public void generateBill(final BillDTO billDto,
+	public void generateBill(final BillDTO bill,
 			HttpServletResponse response, HttpServletRequest request) throws Exception {
-	
-		GeneratePDF bill = new GeneratePDF();
-		bill.generateBillingPDF(response, billDto);
+		
+		
+		GeneratePDF billPdf = new GeneratePDF();
+		billPdf.generateBillingPDF(response, bill);
 		
 		
 	}
