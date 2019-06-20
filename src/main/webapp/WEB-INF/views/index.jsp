@@ -27,22 +27,26 @@
 </head>
 <body>
 	<section class="section">
-		<div class="container">
+	
 			<h1 class="title">Invoizaitor!!</h1>
 			<p class="subtitle">
 				The easier and quicker <strong>Billing generator in pdf
 					format</strong>!
 			</p>
 			<hr></hr>
+			
 			<!-- FORM -->
-			<form id="billForm" name="billForm" action="generateBillInPDF"
-				target="_blank" method="POST">
+			<form class="has-background-light" id="billForm" name="billForm" action="generateBillInPDF"
+				target="_blank" method="POST" style="border:solid 1px;border-radius:15px;">
+				<div class="container"> 
+				<br></br>
 				<div class="columns">
 					<div class="column">
+					
 						<div class="field">
 							<label class="label">Your Company</label>
 							<div class="control">
-								<input class="input" type="text" placeholder="Your Company Name"
+								<input class="input is-info" type="text" placeholder="Your Company Name"
 									id="providerCompany" name="providerCompany" maxlength="50"
 									required>
 							</div>
@@ -50,21 +54,21 @@
 
 						<div class="field">
 							<div class="control">
-								<input class="input" type="text" placeholder="Address Line 1"
+								<input class="input is-info" type="text" placeholder="Address Line 1"
 									id="AddressLine1" name="AddressLine1" maxlength="50" required>
 							</div>
 						</div>
 
 						<div class="field">
 							<div class="control">
-								<input class="input" type="text" placeholder="Address Line 2"
+								<input class="input is-info" type="text" placeholder="Address Line 2"
 									id="AddressLine2" name="AddressLine2" maxlength="50" required>
 							</div>
 						</div>
 
 						<div class="field">
 							<div class="control has-icons-left">
-								<input class="input" type="email" placeholder="Your Email"
+								<input class="input is-info" type="email" placeholder="Your Email"
 									id="providerEmail" name="providerEmail" value="hello@">
 								<span class="icon is-small is-left"> <i
 									class="fas fa-envelope"></i>
@@ -77,7 +81,7 @@
 						<div class="field">
 							<label class="label">Customer</label>
 							<div class="control has-icons-left has-icons-right">
-								<input class="input" type="text" placeholder="Customer Data"
+								<input class="input is-info" type="text" placeholder="Customer Data"
 									value="Company IT Ltd. - ID:45789052"
 									name="customerCompanyData" id="customerCompanyData"> <span
 									class="icon is-small is-left"> <i class="fas fa-user"></i>
@@ -88,28 +92,30 @@
 						<div class="field">
 							<label class="label">Additional Customer Data</label>
 							<div class="control">
-								<textarea class="textarea" placeholder="Att: Ms. Jane Doe"
+								<textarea class="textarea is-info" placeholder="Att: Ms. Jane Doe"
 									id="adicionalCustomerData" name="adicionalCustomerData"></textarea>
 							</div>
 						</div>
 					</div>
 				</div>
+</div>
+				<br></br>
 
-				<hr></hr>
-
+				
+				<div class="container">
 				<a href="javascript:addRow();" class="button is-dark">Add Row</a>
 
-				<p></p>
+				
 				<div id="myModal" class="notification is-danger"
 					style="display: none;">
 					
 					Max <strong>10 rows</strong>
 				</div>
-				
 				<div class="columns">
+				
 				<div class="column">
-
-				<table id="tableBilling" class="table is-striped table is-fullwidth">
+<br></br>
+				<table id="tableBilling" class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth">
 					<thead>
 						<tr>
 							<th></th>
@@ -122,15 +128,15 @@
 					<tbody id="mainTable">
 						<tr>
 							<td></td>
-							<td><input class="input" type="number" placeholder="Ammount"
+							<td><input class="input is-primary" type="number" placeholder="Ammount"
 								id="ammount0" name="ammount0"
 								oninput="javascript:calculateTotals();" /></td>
-							<td><input class="input" type="text"
+							<td><input class="input is-primary" type="text"
 								placeholder="Description" id="description0" name="description0" /></td>
-							<td><input class="input" type="number"
+							<td><input class="input is-primary" type="number"
 								placeholder="Unit Price" id="unitPrice0" name="unitPrice0"
 								oninput="javascript:calculateTotals();" /></td>
-							<td><input class="input" type="number" placeholder="Total"
+							<td><input class="input is-primary" type="number" placeholder="Total"
 								id="total0" name="total0" value="" readonly /></td>
 						</tr>
 					</tbody>
@@ -141,17 +147,17 @@
 							<td></td>
 							<td></td>
 							<td>SubTotal</td>
-							<td><input class="input" type="number"
+							<td><input class="input is-primary" type="number"
 								placeholder="SubTotal" id="subTotal" name="subTotal" readonly /></td>
 						</tr>
 						<tr>
 							<td></td>
 							<td></td>
 							<td>VAT %</td>
-							<td><input class="input" type="number" placeholder="%"
+							<td><input class="input is-primary" type="number" placeholder="%"
 								id="vatPercentage" name="vatPercentage"
 								oninput="javascript:calculateTotals();" /></td>
-							<td><input class="input" type="number" id="vatAmmount"
+							<td><input class="input is-primary" placeholder="VAT" type="number" id="vatAmmount"
 								name="vatAmmount" readonly /></td>
 						</tr>
 						<tr>
@@ -159,13 +165,15 @@
 							<td></td>
 							<td></td>
 							<td>TOTAL</td>
-							<td><input class="input" type="number" placeholder="TOTAL"
+							<td><input class="input is-primary" type="number" placeholder="TOTAL"
 								id="total" name="total" readonly /></td>
 						</tr>
 					</tfoot>
 				</table>
 </div>
 </div>
+</div>
+<br></br>
 				<div class="field is-grouped is-grouped-centered">
 					<p class="control">
 						<input class="button is-primary is-active" type="submit"
@@ -174,13 +182,14 @@
 							value="Reset input">
 
 					</p>
+					<br></br>
 				</div>
 
 			</form>
 
 			<!-- /FORM -->
 			<hr></hr>
-		</div>
+		<!-- </div> -->
 	</section>
 
 
@@ -209,26 +218,22 @@
 								"<tr id=\"row"+counter+"\" name=\"row"+counter+"\">"
 										+ "<td><a href=\"javascript:deleteRow("
 										+ ");\"  class=\"button is-text\">Delete Row</a></td>"
-										+ "<td><input class=\"input\" type=\"number\" placeholder=\"Ammount"
-										+ counter
-										+ "\""
+										+ "<td><input class=\"input is-primary\" type=\"number\" placeholder=\"Ammount\""
 										+ "id=\"ammount"
 										+ counter
 										+ "\" name=\"ammount"
 										+ counter
 										+ "\" oninput=\"javascript:calculateTotals();\"/></td>"
-										+ "<td><input class=\"input\" type=\"text\""
-			+ "placeholder=\"Description"+counter+"\" id=\"description"+counter+"\""
+										+ "<td><input class=\"input is-primary\" type=\"text\""
+			+ "placeholder=\"Description\" id=\"description"+counter+"\""
 			+ "name=\"description"+counter+"\" /></td>"
-										+ "<td><input class=\"input\" type=\"number\""
-										+ "placeholder=\"Unit Price"
-										+ counter
-										+ "\" id=\"unitPrice"
+										+ "<td><input class=\"input is-primary\" type=\"number\""
+										+ "placeholder=\"Unit Price\" id=\"unitPrice"
 										+ counter
 										+ "\" name=\"unitPrice"
 										+ counter
 										+ "\" oninput=\"javascript:calculateTotals();\"/></td>"
-										+ "<td><input class=\"input\" type=\"number\" placeholder=\"Total"+counter+"\""
+										+ "<td><input class=\"input is-primary\" type=\"number\" placeholder=\"Total\""
 			+ "id=\"total"+counter+"\" name=\"total"+counter+"\" value=\"\" readonly /></td>"
 										+ "</tr>"
 
